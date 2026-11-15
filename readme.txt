@@ -83,6 +83,10 @@ Export and import need the `manage_options` and `upload_files` capabilities (adm
 
 == Changelog ==
 
+= 1.0.0 =
+
+* Initial release.
+
 == Upgrade Notice ==
 
 = 1.0.0 =
