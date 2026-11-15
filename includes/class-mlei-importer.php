@@ -13,12 +13,21 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Media importer.
  *
  * For each row the importer, in order:
- * 1. reuses an attachment that already points at the same file,
+ * 1. reuses an attachment imported earlier from the same source URL, or one
+ *    that already points at the same file (same path and size),
  * 2. registers the file if it is already in this site's uploads folder,
  * 3. copies it from the source subsite (network transfers),
  * 4. downloads it from the source URL (when allowed).
+ * When a different file already uses the path, steps 3 and 4 save the new
+ * file under a suffixed name.
  */
 class MLEI_Importer {
+
+	/**
+	 * Post meta that records the source URL of an imported attachment,
+	 * so running the same import again does not create duplicates.
+	 */
+	const SOURCE_META = '_mlei_source_url';
 
 	/**
 	 * Import a row.
@@ -43,18 +52,9 @@ class MLEI_Importer {
 			return $result;
 		}
 
-		$existing = self::find_attachment( $file );
-		if ( $existing ) {
-			$result['new_id']  = $existing;
-			$result['status']  = 'existing';
-			$result['new_url'] = (string) wp_get_attachment_url( $existing );
-			return $result;
-		}
-
-		$type = wp_check_filetype( wp_basename( $file ) );
-		if ( empty( $type['type'] ) ) {
-			$result['message'] = __( 'This file type is not allowed on this site.', 'media-library-export-import' );
-			return $result;
+		$previous = self::find_by_source( $result['old_url'] );
+		if ( $previous ) {
+			return self::existing_result( $result, $previous );
 		}
 
 		$uploads = wp_upload_dir( null, false );
@@ -64,7 +64,23 @@ class MLEI_Importer {
 		}
 		$path = trailingslashit( $uploads['basedir'] ) . $file;
 
-		if ( file_exists( $path ) ) {
+		// A different file (by size) already uses this path: import under a new name.
+		$conflict = file_exists( $path ) && ! self::same_size( $path, $row );
+
+		if ( ! $conflict ) {
+			$existing = self::find_attachment( $file );
+			if ( $existing ) {
+				return self::existing_result( $result, $existing );
+			}
+		}
+
+		$type = wp_check_filetype( wp_basename( $file ) );
+		if ( empty( $type['type'] ) ) {
+			$result['message'] = __( 'This file type is not allowed on this site.', 'media-library-export-import' );
+			return $result;
+		}
+
+		if ( ! $conflict && file_exists( $path ) ) {
 			$status = 'registered';
 		} elseif ( ! empty( $row['source_path'] ) && is_readable( $row['source_path'] ) ) {
 			$path = self::place_file( $row['source_path'], $file, $uploads, false );
@@ -80,6 +96,9 @@ class MLEI_Importer {
 				return $result;
 			}
 			$status = 'downloaded';
+		} elseif ( $conflict ) {
+			$result['message'] = __( 'A different file already uses this path on this site. Allow downloads to import it under a new name.', 'media-library-export-import' );
+			return $result;
 		} else {
 			$result['message'] = __( 'The file is not in the uploads folder of this site.', 'media-library-export-import' );
 			return $result;
@@ -91,10 +110,64 @@ class MLEI_Importer {
 			return $result;
 		}
 
+		if ( '' !== $result['old_url'] ) {
+			update_post_meta( $id, self::SOURCE_META, $result['old_url'] );
+		}
+
 		$result['new_id']  = $id;
 		$result['status']  = $status;
-		$result['new_url'] = (string) wp_get_attachment_url( $id );
+		$result['new_url'] = MLEI_Exporter::switched_url( (string) wp_get_attachment_url( $id ) );
 		return $result;
+	}
+
+	/**
+	 * Fill a result for an attachment that is already in the library.
+	 *
+	 * @param array $result Result so far.
+	 * @param int   $id     Attachment ID.
+	 * @return array
+	 */
+	private static function existing_result( array $result, $id ) {
+		$result['new_id']  = $id;
+		$result['status']  = 'existing';
+		$result['new_url'] = MLEI_Exporter::switched_url( (string) wp_get_attachment_url( $id ) );
+		return $result;
+	}
+
+	/**
+	 * Whether a file on disk has the size recorded in the row
+	 * (true when the row has no size, e.g. older CSV files).
+	 *
+	 * @param string $path Absolute path.
+	 * @param array  $row  Normalized row.
+	 * @return bool
+	 */
+	private static function same_size( $path, array $row ) {
+		$size = isset( $row['filesize'] ) ? (int) $row['filesize'] : 0;
+		return ! $size || (int) wp_filesize( $path ) === $size;
+	}
+
+	/**
+	 * Find an attachment created by an earlier import of the same source URL.
+	 *
+	 * @param string $url Source URL.
+	 * @return int Attachment ID or 0.
+	 */
+	public static function find_by_source( $url ) {
+		if ( '' === $url ) {
+			return 0;
+		}
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Exact lookup; result changes during the import.
+		$id = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT p.ID FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} m ON p.ID = m.post_id
+				WHERE p.post_type = 'attachment' AND m.meta_key = %s AND m.meta_value = %s LIMIT 1",
+				self::SOURCE_META,
+				$url
+			)
+		);
+		return (int) $id;
 	}
 
 	/**
@@ -226,7 +299,7 @@ class MLEI_Importer {
 		}
 
 		$post = array(
-			'guid'           => trailingslashit( $uploads['baseurl'] ) . $relative,
+			'guid'           => MLEI_Exporter::switched_url( trailingslashit( $uploads['baseurl'] ) . $relative ),
 			'post_mime_type' => $type['type'],
 			'post_title'     => $title,
 			'post_excerpt'   => isset( $row['caption'] ) ? $row['caption'] : '',

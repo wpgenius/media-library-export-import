@@ -55,11 +55,11 @@ No. If a file is missing on the target site, the importer downloads it from its 
 
 = Will the files keep the same URLs? =
 
-Files keep their path inside the uploads folder (for example `2024/05/photo.jpg`). The domain changes to the target site's. If a different file with the same name already exists at that path, the new file gets a numeric suffix, which the ID mapping CSV shows.
+Files keep their path inside the uploads folder (for example `2024/05/photo.jpg`). The domain changes to the target site's. If a different file (by file size) already uses that path on the target site, the new file is saved with a numeric suffix such as `photo-1.jpg`, which the ID mapping CSV shows.
 
 = What happens if I run the import twice? =
 
-Items whose file is already in the target library are reported as "Already in library" and are not duplicated.
+Items imported earlier from the same URL, or whose file is already in the target library, are reported as "Already in library" and are not duplicated.
 
 = Which file types are imported? =
 

@@ -1,3 +1,7 @@
+.mlei [hidden] {
+	display: none !important;
+}
+
 .mlei .mlei-card {
 	background: #fff;
 	border: 1px solid #c3c4c7;

@@ -17,7 +17,7 @@ class MLEI_CSV {
 	/**
 	 * Columns written by the exporter, in order.
 	 */
-	const COLUMNS = array( 'id', 'url', 'file', 'title', 'caption', 'description', 'alt', 'date_gmt', 'mime_type' );
+	const COLUMNS = array( 'id', 'url', 'file', 'title', 'caption', 'description', 'alt', 'date_gmt', 'mime_type', 'filesize' );
 
 	/**
 	 * Columns written to the ID mapping file, in order.
@@ -131,6 +131,7 @@ class MLEI_CSV {
 			'description' => isset( $data['description'] ) ? wp_kses_post( self::unprotect_cell( $data['description'] ) ) : '',
 			'alt'         => isset( $data['alt'] ) ? sanitize_text_field( self::unprotect_cell( $data['alt'] ) ) : '',
 			'date_gmt'    => isset( $data['date_gmt'] ) ? sanitize_text_field( $data['date_gmt'] ) : '',
+			'filesize'    => isset( $data['filesize'] ) ? absint( $data['filesize'] ) : 0,
 		);
 	}
 

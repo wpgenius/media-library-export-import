@@ -83,7 +83,7 @@ class MLEI_Exporter {
 
 		$row = array(
 			'id'          => $id,
-			'url'         => (string) wp_get_attachment_url( $id ),
+			'url'         => self::switched_url( (string) wp_get_attachment_url( $id ) ),
 			'file'        => $file,
 			'title'       => $post->post_title,
 			'caption'     => $post->post_excerpt,
@@ -91,13 +91,41 @@ class MLEI_Exporter {
 			'alt'         => (string) get_post_meta( $id, '_wp_attachment_image_alt', true ),
 			'date_gmt'    => $post->post_date_gmt,
 			'mime_type'   => $post->post_mime_type,
+			'filesize'    => '',
 		);
 
+		$path = (string) get_attached_file( $id, true );
+		if ( '' !== $path && file_exists( $path ) ) {
+			$row['filesize'] = (int) wp_filesize( $path );
+		}
+
 		if ( $with_source_path ) {
-			$row['source_path'] = (string) get_attached_file( $id, true );
+			$row['source_path'] = $path;
 		}
 
 		return $row;
+	}
+
+	/**
+	 * Rewrite a media URL built while switch_to_blog() is active.
+	 *
+	 * WP_CONTENT_URL is defined for the site the request started on, so after
+	 * switching to a subdirectory subsite, media URLs miss the subsite's path.
+	 * Return the URL as the subsite itself shows it.
+	 *
+	 * @param string $url Media URL.
+	 * @return string
+	 */
+	public static function switched_url( $url ) {
+		if ( ! is_multisite() || ! ms_is_switched() || empty( $GLOBALS['_wp_switched_stack'] ) ) {
+			return $url;
+		}
+		$origin = untrailingslashit( get_site_url( (int) $GLOBALS['_wp_switched_stack'][0] ) );
+		if ( 0 !== strpos( WP_CONTENT_URL, $origin ) || 0 !== strpos( $url, WP_CONTENT_URL ) ) {
+			return $url;
+		}
+		$content = untrailingslashit( get_option( 'siteurl' ) ) . substr( WP_CONTENT_URL, strlen( $origin ) );
+		return $content . substr( $url, strlen( WP_CONTENT_URL ) );
 	}
 
 	/**
