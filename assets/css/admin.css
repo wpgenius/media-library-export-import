@@ -1,0 +1,48 @@
+.mlei [hidden] {
+	display: none !important;
+}
+
+.mlei .mlei-card {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+	margin: 16px 0;
+	max-width: 960px;
+	padding: 4px 20px 20px;
+}
+
+.mlei .mlei-list {
+	list-style: disc;
+	margin-left: 20px;
+}
+
+.mlei .mlei-progress {
+	margin-top: 20px;
+}
+
+.mlei .mlei-bar {
+	background: #f0f0f1;
+	border-radius: 3px;
+	height: 12px;
+	overflow: hidden;
+}
+
+.mlei .mlei-bar span {
+	background: #2271b1;
+	display: block;
+	height: 100%;
+	transition: width 0.2s ease;
+	width: 0;
+}
+
+.mlei .mlei-results td {
+	word-break: break-all;
+}
+
+.mlei .mlei-results tr.mlei-failed td {
+	color: #b32d2e;
+}
+
+.mlei .mlei-results tbody:empty {
+	display: none;
+}

@@ -1,0 +1,9 @@
+/.git
+/.github
+/.claude
+/.gitignore
+/.distignore
+/.DS_Store
+/README.md
+/node_modules
+/vendor
