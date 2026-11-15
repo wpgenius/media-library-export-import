@@ -83,9 +83,6 @@ Export and import need the `manage_options` and `upload_files` capabilities (adm
 
 == Changelog ==
 
-= 1.0.0 =
-* First public release: CSV export with metadata, batch import that registers, copies or downloads files, ID mapping CSV, and network media transfer between subsites.
-
 == Upgrade Notice ==
 
 = 1.0.0 =

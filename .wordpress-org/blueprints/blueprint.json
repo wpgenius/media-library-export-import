@@ -1,0 +1,39 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "Media Library Export Import demo",
+		"description": "Installs the latest release with a few sample images and opens Media → Export / Import.",
+		"author": "wpgenius"
+	},
+	"landingPage": "/wp-admin/upload.php?page=media-library-export-import",
+	"preferredVersions": {
+		"php": "8.3",
+		"wp": "latest"
+	},
+	"features": {
+		"networking": true
+	},
+	"login": true,
+	"steps": [
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "url",
+				"url": "https://github.com/wpgenius/media-library-export-import/releases/latest/download/media-library-export-import.zip"
+			},
+			"options": {
+				"activate": true
+			}
+		},
+		{
+			"step": "setSiteOptions",
+			"options": {
+				"blogname": "Media Library Export Import demo"
+			}
+		},
+		{
+			"step": "runPHP",
+			"code": "<?php require_once '/wordpress/wp-load.php'; require_once ABSPATH . 'wp-admin/includes/image.php'; require_once ABSPATH . 'wp-admin/includes/file.php'; require_once ABSPATH . 'wp-admin/includes/media.php'; wp_set_current_user( 1 ); foreach ( array( 'wordpress-logo.png', 'w-logo-blue.png', 'wpspin_light-2x.gif' ) as $i => $name ) { $tmp = wp_tempnam( $name ); copy( ABSPATH . 'wp-admin/images/' . $name, $tmp ); $id = media_handle_sideload( array( 'name' => 'sample-' . $name, 'tmp_name' => $tmp ), 0, 'Sample image ' . ( $i + 1 ) ); if ( ! is_wp_error( $id ) ) { update_post_meta( $id, '_wp_attachment_image_alt', 'Sample alt text ' . ( $i + 1 ) ); } }"
+		}
+	]
+}
