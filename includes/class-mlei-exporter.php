@@ -41,7 +41,6 @@ class MLEI_Exporter {
 					'orderby'                => 'ID',
 					'order'                  => 'ASC',
 					'fields'                 => 'ids',
-					'suppress_filters'       => true,
 					'update_post_term_cache' => false,
 				)
 			);
