@@ -1,0 +1,19 @@
+{
+	"name": "media-library-export-import",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Export a WordPress media library to CSV and import it into another site.",
+	"license": "GPL-3.0-or-later",
+	"engines": {
+		"node": "^20.19.0 || >=22.12.0"
+	},
+	"scripts": {
+		"lint": "npm run lint:js && npm run lint:css",
+		"lint:js": "wp-scripts lint-js assets/js",
+		"lint:css": "wp-scripts lint-style \"assets/css/**/*.css\"",
+		"format": "wp-scripts format assets"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^37.1.0"
+	}
+}

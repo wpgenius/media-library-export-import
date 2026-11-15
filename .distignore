@@ -1,9 +1,88 @@
-/.git
+# Files and folders left out of the release zip and the deploys.
+# Patterns use rsync/.gitignore syntax; a leading "/" anchors to the repo root.
+# Anything NOT listed here is "deployable": changing it triggers a release.
+
+# GitHub, CI and repo setup
 /.github
+/bin
+/.wordpress-org
+
+# Git
+.git
+.gitignore
+.gitattributes
+.distignore
+
+# IDE / editors / AI assistants
+.vscode
+.vscodeignore
+.idea
+sftp.json
 /.claude
-/.gitignore
-/.distignore
-/.DS_Store
-/README.md
-/node_modules
+CLAUDE.md
+
+# Docker (local development)
+/.docker
+Dockerfile
+docker-compose.yml
+
+# Environment
+.env
+.env.example
+
+# Composer (dev tools only; the plugin does not need vendor/)
 /vendor
+composer.json
+composer.lock
+
+# Node / front-end tooling
+node_modules
+package.json
+package-lock.json
+.nvmrc
+.eslintrc
+.eslintcache
+.prettierrc
+.stylelintrc
+.stylelintcache
+
+# Coding standards / static analysis
+.editorconfig
+phpcs.xml
+phpcs.xml.dist
+.phpcs.cache
+phpcs-report.xml
+phpstan.neon
+phpstan.neon.dist
+
+# Testing
+/tests
+phpunit.xml
+phpunit.xml.dist
+phpunit-integration.xml.dist
+.wp-env.json
+.wp-env.override.json
+.phpunit.result.cache
+.phpunit.cache
+
+# Block sources: `npm run build` compiles them into build/, which ships
+/blocks
+
+# Build output
+/release
+*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and database dumps
+*.log
+*.sql
+*.sqlite
+
+# Documentation only needed on GitHub (readme.txt ships)
+README.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+SECURITY.md

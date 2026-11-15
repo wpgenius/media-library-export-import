@@ -108,9 +108,9 @@ class MLEI_Exporter {
 	/**
 	 * Rewrite a media URL built while switch_to_blog() is active.
 	 *
-	 * WP_CONTENT_URL is defined for the site the request started on, so after
-	 * switching to a subdirectory subsite, media URLs miss the subsite's path.
-	 * Return the URL as the subsite itself shows it.
+	 * The content URL (WP_CONTENT_URL) is defined for the site the request
+	 * started on, so after switching to a subdirectory subsite, media URLs miss
+	 * the subsite's path. Return the URL as the subsite itself shows it.
 	 *
 	 * @param string $url Media URL.
 	 * @return string
@@ -119,12 +119,13 @@ class MLEI_Exporter {
 		if ( ! is_multisite() || ! ms_is_switched() || empty( $GLOBALS['_wp_switched_stack'] ) ) {
 			return $url;
 		}
-		$origin = untrailingslashit( get_site_url( (int) $GLOBALS['_wp_switched_stack'][0] ) );
-		if ( 0 !== strpos( WP_CONTENT_URL, $origin ) || 0 !== strpos( $url, WP_CONTENT_URL ) ) {
+		$origin  = untrailingslashit( get_site_url( (int) $GLOBALS['_wp_switched_stack'][0] ) );
+		$current = untrailingslashit( content_url() );
+		if ( 0 !== strpos( $current, $origin ) || 0 !== strpos( $url, $current ) ) {
 			return $url;
 		}
-		$content = untrailingslashit( get_option( 'siteurl' ) ) . substr( WP_CONTENT_URL, strlen( $origin ) );
-		return $content . substr( $url, strlen( WP_CONTENT_URL ) );
+		$content = untrailingslashit( get_option( 'siteurl' ) ) . substr( $current, strlen( $origin ) );
+		return $content . substr( $url, strlen( $current ) );
 	}
 
 	/**

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<ruleset name="Media Library Export Import">
+	<description>Coding standards for this plugin.</description>
+
+	<file>.</file>
+
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/.claude/*</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+	<arg name="parallel" value="8"/>
+	<arg name="cache" value=".phpcs.cache"/>
+
+	<!-- Minimum versions: keep in sync with the plugin header and readme.txt. -->
+	<config name="testVersion" value="7.4-"/>
+	<config name="minimum_wp_version" value="6.2"/>
+
+	<rule ref="WordPress"/>
+
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="media-library-export-import"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<exclude-pattern>/tests/*</exclude-pattern>
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="mlei"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>
