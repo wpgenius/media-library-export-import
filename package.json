@@ -2,7 +2,7 @@
 	"name": "media-library-export-import",
 	"version": "1.0.0",
 	"private": true,
-	"description": "Export a WordPress media library to CSV and import it into another site.",
+	"description": "Move your media library to another site with a CSV file, or transfer media between subsites of a multisite network.",
 	"license": "GPL-3.0-or-later",
 	"engines": {
 		"node": "^20.19.0 || >=22.12.0"

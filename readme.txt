@@ -77,6 +77,10 @@ Yes, with filters:
 
 `add_filter( 'mlei_download_timeout', function () { return 120; } );`
 
+= Does the plugin connect to other servers? =
+
+Only when you import a CSV file with "Download files that are missing" ticked: for each file that is not on the target site yet, the importer downloads it from the URL listed in your CSV file, which is the source site you exported from. Nothing is sent to that site beyond the normal file request, and the plugin uses no third-party services, tracking or remote code. Export, network transfer and imports without downloads stay on your own server.
+
 = Who can use it? =
 
 Export and import need the `manage_options` and `upload_files` capabilities (administrators). The network transfer needs `manage_network_options` (super admins).
