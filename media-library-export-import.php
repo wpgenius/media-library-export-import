@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Media Library Export Import
  * Plugin URI:        https://github.com/wpgenius/media-library-export-import
- * Description:       Export your media library to a CSV file and import it into another site, or transfer media between subsites of a multisite network.
+ * Description:       Move your media library to another site with a CSV file, or transfer media between subsites of a multisite network.
  * Version:           1.0.0
  * Requires at least: 6.2
  * Requires PHP:      7.4

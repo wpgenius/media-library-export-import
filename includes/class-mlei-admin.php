@@ -349,7 +349,7 @@ class MLEI_Admin {
 			$rows,
 			array(
 				'target'   => get_current_blog_id(),
-				'download' => ! empty( $_POST['download'] ),
+				'download' => isset( $_POST['download'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['download'] ) ),
 			)
 		);
 
