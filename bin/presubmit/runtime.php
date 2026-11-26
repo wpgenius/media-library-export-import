@@ -49,7 +49,7 @@ if ( is_wp_error( $mlei_id ) ) {
 }
 
 // Export: rows, the CSV download, and the CSV read back.
-$mlei_rows  = MLEI_Exporter::get_rows();
+$mlei_rows      = MLEI_Exporter::get_rows();
 $mlei_lines_csv = array();
 foreach ( $mlei_rows as $mlei_export_row ) {
 	$mlei_line = array();
