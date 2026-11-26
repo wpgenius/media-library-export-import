@@ -31,7 +31,7 @@
 		"lint": "parallel-lint --exclude vendor --exclude node_modules .",
 		"phpcs": "phpcs",
 		"phpcbf": "phpcbf",
-		"make-pot": "wp i18n make-pot . languages/media-library-export-import.pot --slug=media-library-export-import --domain=media-library-export-import --exclude=vendor,node_modules,build",
+		"make-pot": "wp i18n make-pot . languages/media-library-export-import.pot --slug=media-library-export-import --domain=media-library-export-import --exclude=tests,vendor,node_modules,release,.claude,bin",
 		"phpstan": "phpstan analyse --memory-limit=1G"
 	},
 	"scripts-descriptions": {
