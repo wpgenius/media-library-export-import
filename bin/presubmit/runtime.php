@@ -13,7 +13,7 @@
  * @package MediaLibraryExportImport
  */
 
-// phpcs:disable WordPress.WP.AlternativeFunctions, WordPress.PHP.DevelopmentFunctions, WordPress.WP.GlobalVariablesOverride -- A test script, not plugin code.
+// phpcs:disable WordPress.WP.AlternativeFunctions, WordPress.PHP.DevelopmentFunctions, WordPress.WP.GlobalVariablesOverride, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- A test script, not plugin code.
 
 require_once '/wordpress/wp-load.php';
 require_once ABSPATH . 'wp-admin/includes/admin.php';
@@ -49,11 +49,17 @@ if ( is_wp_error( $mlei_id ) ) {
 }
 
 // Export: rows, the CSV download, and the CSV read back.
-$mlei_rows = MLEI_Exporter::get_rows();
+$mlei_rows  = MLEI_Exporter::get_rows();
+$mlei_lines_csv = array();
+foreach ( $mlei_rows as $mlei_export_row ) {
+	$mlei_line = array();
+	foreach ( MLEI_CSV::COLUMNS as $mlei_column ) {
+		$mlei_line[] = $mlei_export_row[ $mlei_column ];
+	}
+	$mlei_lines_csv[] = $mlei_line;
+}
 ob_start();
-MLEI_CSV::stream( 'presubmit.csv', MLEI_CSV::COLUMNS, array_map( 'array_values', array_map( static function ( $row ) {
-	return array_intersect_key( $row, array_flip( MLEI_CSV::COLUMNS ) );
-}, $mlei_rows ) ) );
+MLEI_CSV::stream( 'presubmit.csv', MLEI_CSV::COLUMNS, $mlei_lines_csv );
 $mlei_csv      = (string) ob_get_clean();
 $mlei_csv_file = wp_tempnam( 'presubmit.csv' );
 file_put_contents( $mlei_csv_file, $mlei_csv );
@@ -130,7 +136,16 @@ global $wpdb;
 $mlei_lines[] = 'uninstall_output_bytes=' . strlen( $mlei_uninstall_output )
 	. ' job_options_left=' . (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( 'mlei_job' ) . '%' ) ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Checks the options are gone.
 	. ' source_meta_left=' . (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s", '_mlei_source_url' ) ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Checks the meta is gone.
-	. ' media_kept=' . count( get_posts( array( 'post_type' => 'attachment', 'post_status' => 'inherit', 'numberposts' => -1, 'fields' => 'ids' ) ) );
+	. ' media_kept=' . count(
+		get_posts(
+			array(
+				'post_type'   => 'attachment',
+				'post_status' => 'inherit',
+				'numberposts' => -1,
+				'fields'      => 'ids',
+			)
+		)
+	);
 
 $mlei_plugin_notices = count( preg_grep( '/^PLUGIN /', $mlei_errors ) );
 $mlei_lines[]        = 'plugin_notices=' . $mlei_plugin_notices . ' core_notices=' . ( count( $mlei_errors ) - $mlei_plugin_notices );
