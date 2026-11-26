@@ -4,7 +4,7 @@ Tags: media, export, import, migration, multisite
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -86,6 +86,12 @@ Only when you import a CSV file with "Download files that are missing" ticked: f
 Export and import need the `manage_options` and `upload_files` capabilities (administrators). The network transfer needs `manage_network_options` (super admins).
 
 == Changelog ==
+
+= 1.0.1 =
+
+* Plugin description matches the readme summary (#22)
+* Sanitize the "Download missing files" import option (#23)
+* Readme explains when the plugin connects to other servers (#24)
 
 = 1.0.0 =
 
