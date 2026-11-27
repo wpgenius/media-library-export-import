@@ -7,9 +7,13 @@
  * administrator, after activation. Callbacks that return text add it to the
  * results line as "key=value" pairs.
  *
+ * The check runs as a script, not an admin page request, so is_admin() is
+ * false while the plugin loads and MLEI_Admin::init() never runs: setup starts
+ * it, or the Dashboard and own-screen checks would see no admin hooks.
+ *
  * Media Library Export Import has no front end, so "render" is empty: setup
- * runs an export and an import, check_render reports them, and settings_page
- * prints Media > Export / Import.
+ * runs an export and an import and returns the results, settings_page prints
+ * Media > Export / Import, and own_screen checks its assets load there.
  *
  * Run by bin/presubmit/run.sh inside WordPress Playground; not part of the plugin.
  */
@@ -36,8 +40,7 @@ return array(
 			'Presubmit image'
 		);
 		if ( is_wp_error( $id ) ) {
-			$GLOBALS['mlei_presubmit'] = 'sample_image=' . rawurlencode( $id->get_error_message() );
-			return;
+			return 'sample_image=' . rawurlencode( $id->get_error_message() );
 		}
 		update_post_meta( $id, '_wp_attachment_image_alt', 'Presubmit alt' );
 
@@ -80,24 +83,7 @@ return array(
 			$results[] = 'job_stored=' . ( MLEI_Jobs::get( $job ) ? 'yes' : 'no' );
 		}
 
-		$GLOBALS['mlei_presubmit'] = implode( ' ', $results );
-	},
-
-	// No blocks or shortcodes: report the setup results and the assets on the
-	// plugin's own screen, then dequeue them so the Dashboard check stays honest.
-	'check_render'    => static function () {
-		set_current_screen( 'media_page_' . MLEI_Admin::PAGE ); // Core's own admin_enqueue_scripts callbacks read the screen.
-		do_action( 'admin_enqueue_scripts', 'media_page_' . MLEI_Admin::PAGE );
-		$own = array();
-		foreach ( array( wp_scripts(), wp_styles() ) as $deps ) {
-			if ( in_array( 'mlei-admin', $deps->queue, true ) ) {
-				$own[] = 'mlei-admin';
-			}
-		}
-		wp_dequeue_script( 'mlei-admin' );
-		wp_dequeue_style( 'mlei-admin' );
-		$setup = isset( $GLOBALS['mlei_presubmit'] ) ? $GLOBALS['mlei_presubmit'] : 'setup=missing';
-		return $setup . ' own_screen_assets=' . ( $own ? count( $own ) . 'x' . 'mlei-admin' : 'none' );
+		return implode( ' ', $results );
 	},
 
 	// Media > Export / Import.
@@ -105,6 +91,9 @@ return array(
 		$GLOBALS['plugin_page'] = MLEI_Admin::PAGE;
 		MLEI_Admin::render_page();
 	},
+
+	// The Media > Export / Import screen: mlei-admin script and style load here.
+	'own_screen'      => 'media_page_' . MLEI_Admin::PAGE,
 
 	// Recorded source URLs go on uninstall; the media stays.
 	'after_uninstall' => static function () {
