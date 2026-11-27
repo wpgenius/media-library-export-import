@@ -83,19 +83,6 @@ class MLEI_Jobs {
 	}
 
 	/**
-	 * Delete a job.
-	 *
-	 * @param string $id Job ID.
-	 */
-	public static function delete( $id ) {
-		$id = sanitize_key( $id );
-		self::remove( self::KEY_PREFIX . $id );
-		$index = self::index();
-		unset( $index[ $id ] );
-		self::update( self::INDEX_KEY, $index );
-	}
-
-	/**
 	 * Delete jobs older than the lifetime.
 	 */
 	public static function purge_expired() {

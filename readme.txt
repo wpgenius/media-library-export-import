@@ -1,5 +1,5 @@
 === Media Library Export Import ===
-Contributors: wpgenius
+Contributors: mkrndmane
 Tags: media, export, import, migration, multisite
 Requires at least: 6.2
 Tested up to: 7.1

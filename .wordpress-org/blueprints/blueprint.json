@@ -3,7 +3,7 @@
 	"meta": {
 		"title": "Media Library Export Import demo",
 		"description": "Installs the latest release with a few sample images and opens Media → Export / Import.",
-		"author": "wpgenius"
+		"author": "mkrndmane"
 	},
 	"landingPage": "/wp-admin/upload.php?page=media-library-export-import",
 	"preferredVersions": {
